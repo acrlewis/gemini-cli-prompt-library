@@ -65,6 +65,22 @@ When a user runs a prompt command (e.g., `/prompts:code-review-security`), you s
 3. **Execute the prompt** with the full context
 4. **Provide high-quality results** following the prompt's guidelines
 
+## Workspace Integration & Context Gathering
+
+When executing prompts, treat the user's active workspace as implied context:
+* **Proactive Clarification:** If the `{{args}}` provided by the user are too vague or lack necessary context, *proactively ask the user* for the missing information before executing the prompt, or use your tools to inspect their active workspace for clues first.
+* **Workspace Scanning:** If a prompt refers to "this project" but no code is pasted in `{{args}}`, use your file-reading tools to scan typical entry points (e.g., `package.json`, `main.py`, `src/`) to ground your output in the actual codebase.
+
+## Prompt Execution Workflow
+When a user requests a task, follow these steps:
+1. **Identify the task**: Determine what the user wants to accomplish
+2. **Find the right prompt**: Search the library for the most relevant template
+3. **Gather context**: Collect necessary information (code, file contents, user preferences)
+4. **Substitute variables**: Replace placeholders in the template with actual values
+5. **Execute**: Run the prompt with the complete context
+6. **Review**: Ensure the output is high-quality and meets the user's needs
+7. **Refine**: Make any necessary adjustments or improvements
+
 ## Prompt Best Practices
 
 When executing prompts, follow these principles:
@@ -89,6 +105,11 @@ When executing prompts, follow these principles:
 - Include code examples when relevant
 - Explain the "why" behind recommendations
 
+### Output Formatting
+- **Always use Markdown:** Use fenced code blocks with the correct language identifier.
+- **Maintain Brevity:** Avoid printing out the exact prompt template back to the user; just deliver the resulting work.
+- **Include Diffs:** When suggesting code refactoring (`refactor-suggestions`), present the changes using clear before/after comparisons or standard code diff formats.
+
 ## Variable Substitution
 
 Prompts can include variables that get replaced with user input:
@@ -110,6 +131,14 @@ Prompts can include variables that get replaced with user input:
 **User asks:** "Explain this complex algorithm"
 **You do:** Use the `explain-code` prompt, break down the algorithm step-by-step
 
+### Chaining Prompts (Workflows)
+
+If completing a large feature, recognize when prompts should follow each other logically. For example:
+1. Start with `/architecture:design-api`
+2. Once the API is designed, use the context to execute `/docs:write-api-docs`
+3. Then follow up with `/testing:generate-e2e-tests` for the new endpoints.
+
+Suggest these logical next steps to the user after completing an initial prompt!
 ## Prompt Library Philosophy
 
 The prompts in this library are designed to:
@@ -117,6 +146,12 @@ The prompts in this library are designed to:
 - **Improve quality** - Based on prompt engineering best practices
 - **Teach by example** - Show good prompt patterns
 - **Be customizable** - Users can adapt them to their needs
+
+## Handling Unlisted Tasks (Fallbacks)
+If a user requests a task that doesn't have a specific prompt template in the library:
+1. Identify the closest available prompt category and adapt it.
+2. If no category fits, fallback to applying general *Prompt Engineering Best Practices* to fulfill the request.
+3. Suggest that the user might want to create a new prompt template for this task in the future.
 
 ## When Users Need Help
 
